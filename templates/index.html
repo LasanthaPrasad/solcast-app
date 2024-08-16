@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Locations - Solcast Forecast App{% endblock %}
+
+{% block content %}
+    <h1>Locations</h1>
+    <div id="locationList" class="list-group mb-4">
+        <!-- Locations will be populated here -->
+    </div>
+
+    <h2>Add New Location</h2>
+    <form id="addLocationForm">
+        <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" class="form-control" id="name" required>
+        </div>
+        <div class="mb-3">
+            <label for="api_key" class="form-label">API Key</label>
+            <input type="text" class="form-control" id="api_key" required>
+        </div>
+        <div class="mb-3">
+            <label for="latitude" class="form-label">Latitude</label>
+            <input type="number" class="form-control" id="latitude" step="any" required>
+        </div>
+        <div class="mb-3">
+            <label for="longitude" class="form-label">Longitude</label>
+            <input type="number" class="form-control" id="longitude" step="any" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Add Location</button>
+    </form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function loadLocations() {
+        $.get('/locations', function(data) {
+            $('#locationList').empty();
+            data.forEach(function(location) {
+                $('#locationList').append(
+                    `<a href="/forecast/${location.id}" class="list-group-item list-group-item-action">
+                        ${location.name} (${location.latitude}, ${location.longitude})
+                    </a>`
+                );
+            });
+        });
+    }
+
+    $(document).ready(function() {
+        loadLocations();
+
+        $('#addLocationForm').submit(function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: '/add_location',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    name: $('#name').val(),
+                    api_key: $('#api_key').val(),
+                    latitude: parseFloat($('#latitude').val()),
+                    longitude: parseFloat($('#longitude').val())
+                }),
+                success: function(response) {
+                    alert('Location added successfully');
+                    $('#addLocationForm')[0].reset();
+                    loadLocations();
+                },
+                error: function(xhr, status, error) {
+                    alert('Error adding location: ' + error);
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
