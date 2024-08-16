@@ -31,11 +31,11 @@ def init_db():
         
         # Add sample data
         sample_locations = [
-            Location(name='New York', api_key='sample_key_1', latitude=40.7128, longitude=-74.0060),
-            Location(name='London', api_key='sample_key_2', latitude=51.5074, longitude=-0.1278),
-            Location(name='Tokyo', api_key='sample_key_3', latitude=35.6762, longitude=139.6503),
-            Location(name='Sydney', api_key='sample_key_4', latitude=-33.8688, longitude=151.2093),
-            Location(name='Rio de Janeiro', api_key='sample_key_5', latitude=-22.9068, longitude=-43.1729)
+            Location(name='New York', api_key='kAVziMj4__x-RQ9Ab67-TBwv2ry_Z9uY', latitude=40.7128, longitude=-74.0060),
+            Location(name='London', api_key='kAVziMj4__x-RQ9Ab67-TBwv2ry_Z9uY', latitude=51.5074, longitude=-0.1278),
+            Location(name='Tokyo', api_key='kAVziMj4__x-RQ9Ab67-TBwv2ry_Z9uY', latitude=35.6762, longitude=139.6503),
+            Location(name='Sydney', api_key='kAVziMj4__x-RQ9Ab67-TBwv2ry_Z9uY', latitude=-33.8688, longitude=151.2093),
+            Location(name='Rio de Janeiro', api_key='kAVziMj4__x-RQ9Ab67-TBwv2ry_Z9uY', latitude=-22.9068, longitude=-43.1729)
         ]
         
         # Add sample locations to the database
