@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Forecast for {{ location.name }} - Solcast Forecast App{% endblock %}
+
+{% block extra_head %}
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY"></script>
+    <style>
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4">Forecast for {{ location.name }}</h1>
+    
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h3>Location Details</h3>
+            <ul class="list-group">
+                <li class="list-group-item"><strong>Name:</strong> {{ location.name }}</li>
+                <li class="list-group-item"><strong>Latitude:</strong> {{ location.latitude }}</li>
+                <li class="list-group-item"><strong>Longitude:</strong> {{ location.longitude }}</li>
+            </ul>
+        </div>
+        <div class="col-md-6">
+            <h3>Map</h3>
+            <div id="map" data-lat="{{ location.latitude }}" data-lng="{{ location.longitude }}" data-name="{{ location.name }}"></div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <h3>Forecast Plot</h3>
+            <img src="data:image/png;base64,{{ plot_url }}" alt="Forecast Plot" class="img-fluid">
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function initMap() {
+        var mapElement = document.getElementById('map');
+        var lat = parseFloat(mapElement.dataset.lat);
+        var lng = parseFloat(mapElement.dataset.lng);
+        var name = mapElement.dataset.name;
+
+        var location = {lat: lat, lng: lng};
+        var map = new google.maps.Map(mapElement, {
+            zoom: 10,
+            center: location
+        });
+        var marker = new google.maps.Marker({
+            position: location,
+            map: map,
+            title: name
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        initMap();
+    });
+</script>
+{% endblock %}
