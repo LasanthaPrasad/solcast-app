@@ -5,7 +5,11 @@
 {% block content %}
     <h1>Locations</h1>
     <div id="locationList" class="list-group mb-4">
-        <!-- Locations will be populated here -->
+        {% for location in locations %}
+            <a href="{{ url_for('forecast', id=location.id) }}" class="list-group-item list-group-item-action">
+                {{ location.name }} ({{ location.latitude }}, {{ location.longitude }})
+            </a>
+        {% endfor %}
     </div>
 
     <h2>Add New Location</h2>
@@ -32,43 +36,28 @@
 
 {% block extra_js %}
 <script>
-    function loadLocations() {
-        $.get('/locations', function(data) {
-            $('#locationList').empty();
-            data.forEach(function(location) {
-                $('#locationList').append(
-                    `<a href="/forecast/${location.id}" class="list-group-item list-group-item-action">
-                        ${location.name} (${location.latitude}, ${location.longitude})
-                    </a>`
-                );
-            });
-        });
-    }
-
-    $(document).ready(function() {
-        loadLocations();
-
-        $('#addLocationForm').submit(function(e) {
-            e.preventDefault();
-            $.ajax({
-                url: '/add_location',
-                method: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({
-                    name: $('#name').val(),
-                    api_key: $('#api_key').val(),
-                    latitude: parseFloat($('#latitude').val()),
-                    longitude: parseFloat($('#longitude').val())
-                }),
-                success: function(response) {
-                    alert('Location added successfully');
-                    $('#addLocationForm')[0].reset();
-                    loadLocations();
-                },
-                error: function(xhr, status, error) {
-                    alert('Error adding location: ' + error);
-                }
-            });
+    document.getElementById('addLocationForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        fetch('/add_location', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                name: document.getElementById('name').value,
+                api_key: document.getElementById('api_key').value,
+                latitude: parseFloat(document.getElementById('latitude').value),
+                longitude: parseFloat(document.getElementById('longitude').value)
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            location.reload();
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            alert('Error adding location');
         });
     });
 </script>
