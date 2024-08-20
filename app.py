@@ -7,6 +7,11 @@ import matplotlib.pyplot as plt
 import io
 import base64
 from datetime import datetime
+from solcast import forecast
+from solcast.unmetered_locations import UNMETERED_LOCATIONS
+sydney = UNMETERED_LOCATIONS['Sydney Opera House']
+
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', '').replace('postgres://', 'postgresql://')
@@ -26,8 +31,19 @@ class Location(db.Model):
 
 def get_forecast_data(api_key, latitude, longitude):
     solcast.api_key = api_key
-    forecasts = solcast.get_radiation_forecasts(latitude, longitude)
+    # forecasts = solcast.get_radiation_forecasts(latitude, longitude)
+    forecasts = solcast.rooftop_pv_power(
+    latitude=sydney['latitude'], 
+    longitude=sydney['longitude'],
+    period='PT5M',
+    capacity=5,  # 5KW
+    tilt=22,  # degrees
+    output_parameters='pv_power_rooftop'
+    )
     df = pd.DataFrame(forecasts)
+
+
+
     return df
 
 def generate_forecast_plot(df):
