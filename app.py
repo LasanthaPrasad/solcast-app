@@ -1,27 +1,24 @@
 import os
 from flask import Flask, render_template, request, jsonify, abort
 from flask_sqlalchemy import SQLAlchemy
-import solcast
+import requests
 import pandas as pd
 import matplotlib.pyplot as plt
 import io
 import base64
 from datetime import datetime
-from solcast import forecast
-from solcast.unmetered_locations import UNMETERED_LOCATIONS
-sydney = UNMETERED_LOCATIONS['Sydney Opera House']
-
-
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', '').replace('postgres://', 'postgresql://')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
+SOLCAST_API_KEY = os.environ.get('SOLCAST_API_KEY')
+
 class Location(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-    api_key = db.Column(db.String(100), nullable=False)
+    resource_id = db.Column(db.String(100), nullable=False)
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -29,31 +26,23 @@ class Location(db.Model):
     def __repr__(self):
         return f'<Location {self.name}>'
 
-def get_forecast_data(api_key, latitude, longitude):
-    solcast.api_key = 'kAVziMj4__x-RQ9Ab67-TBwv2ry_Z9uY' #api_key
-    # forecasts = solcast.get_radiation_forecasts(latitude, longitude)
-    forecasts = solcast.rooftop_pv_power(
-    latitude=sydney['latitude'], 
-    longitude=sydney['longitude'],
-    period='PT5M',
-    capacity=5,  # 5KW
-    tilt=22,  # degrees
-    output_parameters='pv_power_rooftop'
-    )
-    df = pd.DataFrame(forecasts)
-
-
-
-    return df
+def get_forecast_data(resource_id):
+    url = f"https://api.solcast.com.au/pv_power/forecasts?resource_id={resource_id}&api_key={SOLCAST_API_KEY}"
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        df = pd.DataFrame(data['forecasts'])
+        df['period_end'] = pd.to_datetime(df['period_end'])
+        return df
+    else:
+        raise Exception(f"Failed to fetch data: {response.status_code}")
 
 def generate_forecast_plot(df):
     plt.figure(figsize=(12, 6))
-    plt.plot(df['period_end'], df['ghi'], label='GHI')
-    plt.plot(df['period_end'], df['air_temp'], label='Air Temperature')
-    plt.plot(df['period_end'], df['ghi_clear_sky'], label='Clear Sky GHI')
+    plt.plot(df['period_end'], df['pv_estimate'], label='PV Estimate')
     plt.xlabel('Time')
-    plt.ylabel('Value')
-    plt.title('Forecast Data')
+    plt.ylabel('PV Power (kW)')
+    plt.title('PV Power Forecast')
     plt.legend()
     plt.xticks(rotation=45)
     plt.tight_layout()
@@ -73,7 +62,7 @@ def add_location():
     data = request.json
     new_location = Location(
         name=data['name'],
-        api_key=data['api_key'],
+        resource_id=data['resource_id'],
         latitude=data['latitude'],
         longitude=data['longitude']
     )
@@ -86,7 +75,7 @@ def update_location(id):
     location = Location.query.get_or_404(id)
     data = request.json
     location.name = data['name']
-    location.api_key = data['api_key']
+    location.resource_id = data['resource_id']
     location.latitude = data['latitude']
     location.longitude = data['longitude']
     db.session.commit()
@@ -105,7 +94,7 @@ def get_location(id):
     return jsonify({
         'id': location.id,
         'name': location.name,
-        'api_key': location.api_key,
+        'resource_id': location.resource_id,
         'latitude': location.latitude,
         'longitude': location.longitude
     })
@@ -114,12 +103,12 @@ def get_location(id):
 def forecast(id):
     location = Location.query.get_or_404(id)
     try:
-        df = get_forecast_data(location.api_key, location.latitude, location.longitude)
+        df = get_forecast_data(location.resource_id)
         plot_url = generate_forecast_plot(df)
         return render_template('forecast.html', location=location, plot_url=plot_url)
     except Exception as e:
         app.logger.error(f"Error generating forecast for location {id}: {str(e)}")
-        abort(500, description="Error generating forecast. Please check the API key and try again.")
+        abort(500, description="Error generating forecast. Please check the resource ID and try again.")
 
 @app.route('/locations')
 def list_locations():
