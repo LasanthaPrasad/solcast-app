@@ -30,7 +30,7 @@ class Location(db.Model):
         return f'<Location {self.name}>'
 
 def get_forecast_data(api_key, latitude, longitude):
-    solcast.api_key = api_key
+    solcast.api_key = 'kAVziMj4__x-RQ9Ab67-TBwv2ry_Z9uY' #api_key
     # forecasts = solcast.get_radiation_forecasts(latitude, longitude)
     forecasts = solcast.rooftop_pv_power(
     latitude=sydney['latitude'], 
