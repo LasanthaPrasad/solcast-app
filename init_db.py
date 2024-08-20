@@ -12,10 +12,11 @@ db = SQLAlchemy(app)
 class Location(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-    api_key = db.Column(db.String(100), nullable=False)
+    resource_id = db.Column(db.String(100), nullable=False)
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
 
     def __repr__(self):
         return f'<Location {self.name}>'
@@ -29,23 +30,22 @@ def init_db():
         # Create all tables
         db.create_all()
         
-        # Add sample data
-        sample_locations = [
-            Location(name='New York', api_key='kAVziMj4__x-RQ9Ab67-TBwv2ry_Z9uY', latitude=40.7128, longitude=-74.0060),
-            Location(name='London', api_key='kAVziMj4__x-RQ9Ab67-TBwv2ry_Z9uY', latitude=51.5074, longitude=-0.1278),
-            Location(name='Tokyo', api_key='kAVziMj4__x-RQ9Ab67-TBwv2ry_Z9uY', latitude=35.6762, longitude=139.6503),
-            Location(name='Sydney', api_key='kAVziMj4__x-RQ9Ab67-TBwv2ry_Z9uY', latitude=-33.8688, longitude=151.2093),
-            Location(name='Rio de Janeiro', api_key='kAVziMj4__x-RQ9Ab67-TBwv2ry_Z9uY', latitude=-22.9068, longitude=-43.1729)
-        ]
+        # Add new location
+        new_location = Location(
+            name='Sample Location',
+            resource_id='6b0d-76b6-82d2-22b0',
+            latitude=6.881131,  # Example latitude for Sydney, Australia
+            longitude=79.918885  # Example longitude for Sydney, Australia
+        )
         
-        # Add sample locations to the database
-        for location in sample_locations:
-            db.session.add(location)
+        # Add new location to the database
+        db.session.add(new_location)
         
         # Commit the changes
         db.session.commit()
         
-        print("Database initialized with sample data.")
+        print("Database initialized with new location.")
+        print(f"Added: {new_location}")
 
 if __name__ == '__main__':
     init_db()

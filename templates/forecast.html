@@ -1,25 +1,16 @@
 {% extends "base.html" %}
 
-{% block title %}Forecast for {{ location.name }} - Solcast Forecast App{% endblock %}
-
-{% block extra_head %}
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDsbX84HusFux4ja6z9gKVw14TMGheNV3Q"></script>
-    <style>
-        #map {
-            height: 400px;
-            width: 100%;
-        }
-    </style>
-{% endblock %}
+{% block title %}PV Power Forecast for {{ location.name }} - Solcast Forecast App{% endblock %}
 
 {% block content %}
-    <h1 class="mb-4">Forecast for {{ location.name }}</h1>
+    <h1 class="mb-4">PV Power Forecast for {{ location.name }}</h1>
     
     <div class="row mb-4">
         <div class="col-md-6">
             <h3>Location Details</h3>
             <ul class="list-group">
                 <li class="list-group-item"><strong>Name:</strong> {{ location.name }}</li>
+                <li class="list-group-item"><strong>Resource ID:</strong> {{ location.resource_id }}</li>
                 <li class="list-group-item"><strong>Latitude:</strong> {{ location.latitude }}</li>
                 <li class="list-group-item"><strong>Longitude:</strong> {{ location.longitude }}</li>
             </ul>
@@ -32,8 +23,8 @@
 
     <div class="row">
         <div class="col-12">
-            <h3>Forecast Plot</h3>
-            <img src="data:image/png;base64,{{ plot_url }}" alt="Forecast Plot" class="img-fluid">
+            <h3>PV Power Forecast Plot</h3>
+            <img src="data:image/png;base64,{{ plot_url }}" alt="PV Power Forecast Plot" class="img-fluid">
         </div>
     </div>
 {% endblock %}

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Locations - Solcast Forecast App{% endblock %}
+{% block title %}Locations - Solcast PV Power Forecast App{% endblock %}
 
 {% block content %}
     <h1>Locations</h1>
@@ -19,8 +19,8 @@
             <input type="text" class="form-control" id="name" required>
         </div>
         <div class="mb-3">
-            <label for="api_key" class="form-label">API Key</label>
-            <input type="text" class="form-control" id="api_key" required>
+            <label for="resource_id" class="form-label">Resource ID</label>
+            <input type="text" class="form-control" id="resource_id" required>
         </div>
         <div class="mb-3">
             <label for="latitude" class="form-label">Latitude</label>
@@ -45,7 +45,7 @@
             },
             body: JSON.stringify({
                 name: document.getElementById('name').value,
-                api_key: document.getElementById('api_key').value,
+                resource_id: document.getElementById('resource_id').value,
                 latitude: parseFloat(document.getElementById('latitude').value),
                 longitude: parseFloat(document.getElementById('longitude').value)
             }),
