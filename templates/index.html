@@ -7,7 +7,7 @@
     <div id="locationList" class="list-group mb-4">
         {% for location in locations %}
             <a href="{{ url_for('forecast', id=location.id) }}" class="list-group-item list-group-item-action">
-                {{ location.name }} ({{ location.latitude }}, {{ location.longitude }})
+                {{ location.name }} ({{ location.latitude }}, {{ location.longitude }}) - Capacity: {{ location.capacity }} kW
             </a>
         {% endfor %}
     </div>
@@ -30,6 +30,10 @@
             <label for="longitude" class="form-label">Longitude</label>
             <input type="number" class="form-control" id="longitude" step="any" required>
         </div>
+        <div class="mb-3">
+            <label for="capacity" class="form-label">Capacity (kW)</label>
+            <input type="number" class="form-control" id="capacity" step="any" required>
+        </div>
         <button type="submit" class="btn btn-primary">Add Location</button>
     </form>
 {% endblock %}
@@ -47,7 +51,8 @@
                 name: document.getElementById('name').value,
                 resource_id: document.getElementById('resource_id').value,
                 latitude: parseFloat(document.getElementById('latitude').value),
-                longitude: parseFloat(document.getElementById('longitude').value)
+                longitude: parseFloat(document.getElementById('longitude').value),
+                capacity: parseFloat(document.getElementById('capacity').value)
             }),
         })
         .then(response => response.json())

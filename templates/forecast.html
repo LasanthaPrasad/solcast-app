@@ -2,6 +2,16 @@
 
 {% block title %}PV Power Forecast for {{ location.name }} - Solcast Forecast App{% endblock %}
 
+{% block extra_head %}
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY"></script>
+    <style>
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+    </style>
+{% endblock %}
+
 {% block content %}
     <h1 class="mb-4">PV Power Forecast for {{ location.name }}</h1>
     
@@ -13,6 +23,7 @@
                 <li class="list-group-item"><strong>Resource ID:</strong> {{ location.resource_id }}</li>
                 <li class="list-group-item"><strong>Latitude:</strong> {{ location.latitude }}</li>
                 <li class="list-group-item"><strong>Longitude:</strong> {{ location.longitude }}</li>
+                <li class="list-group-item"><strong>Capacity:</strong> {{ location.capacity }} kW</li>
             </ul>
         </div>
         <div class="col-md-6">

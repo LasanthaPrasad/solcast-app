@@ -15,8 +15,8 @@ class Location(db.Model):
     resource_id = db.Column(db.String(100), nullable=False)
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
+    capacity = db.Column(db.Float, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
 
     def __repr__(self):
         return f'<Location {self.name}>'
@@ -34,8 +34,9 @@ def init_db():
         new_location = Location(
             name='Sample Location',
             resource_id='6b0d-76b6-82d2-22b0',
-            latitude=6.881131,  # Example latitude for Sydney, Australia
-            longitude=79.918885  # Example longitude for Sydney, Australia
+            latitude=-33.865143,  # Example latitude for Sydney, Australia
+            longitude=151.209900,  # Example longitude for Sydney, Australia
+            capacity=5000.0  # Example capacity in kW
         )
         
         # Add new location to the database
